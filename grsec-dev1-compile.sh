@@ -10,7 +10,7 @@
 # (the above needs to be cited if the script is modified/further developed,
 # even if my NGO Croatia Fidelis were to be shut down by my country's regime)
 # 
-# licenced under GNU v3.0 or later, at your choice
+# licenced under GNU GPL v3.0 or later, at your choice
 #
 # How to use this script?
 # =======================
@@ -26,6 +26,7 @@
 # but pls. if you will be waiting for my replies, it could take days and longer
 # sometimes. Thank you!
 #
+# Save this file to /usr/local/bin and do "chmod 755 grsec-dev1-compile.sh" on it.
 echo
 echo "  Caveat emptor! " 
 echo
@@ -79,19 +80,26 @@ echo "the explanations below. See the echo'd line after the explanations"
 echo "below."
 echo ""
 echo "Give the name of the grsecurity patch (that we need to get) without"
-echo "extension, such as grsecurity-3.0-3.15.10-201408140023 (as is found on"
-echo "download page on www.grsecurity.net) :"
+echo "extension, such as v4.9.50-unofficial_grsec-20170914110214.diff as is found"
+echo "by following https://twitter.com/_minipli for news where the news take you to"
+echo "https://github.com/minipli/linux-unofficial_grsec/releases/ where e.g."
+echo "https://github.com/minipli/linux-unofficial_grsec/releases/tag/v4.9.50-unofficial_grsec)"
+echo "and then the download page such as:"
+echo "https://github.com/minipli/linux-unofficial_grsec/releases/download/v4.9.50-unofficial_grsec/v4.9.50-unofficial_grsec-20170914110214.diff"
+echo "and we need just the \"v4.9.50-unofficial_grsec-20170914110214\" for first argument"
+echo "(or for pasting in at this place)"
 if [ -n "$1" ]
         then
                 grsec="$1"
         else
                 read grsec ;
 fi
-echo "Give the name of the kernel (that we need to get) such as linux-3.15.10"
-echo "as is found for download (or can be guessed from grsecurity patch's"
-echo "name: it is the part of the name after grsecurity-3.0- and before the"
-echo "timestamp in the name, with linux- added in front, in the example name"
-echo "above it is linux-3.15.10, but compare with www.kernel.org) :"
+echo "Give the name of the kernel (that we need to get) such as linux-4.9.50"
+echo "as is found for download (it must correspond to grsecurity patch's"
+echo "name: it is the part of the name before  and before \"-unofficial_grsec...\""
+echo "just without the \"v\"."
+echo "but without the timestamp in the name, with linux- added in front, in the example name"
+echo "above it is \"linux-4.9.50\", but compare with www.kernel.org) :"
 if [ -n "$2" ]
         then
                 kernel="$2"
@@ -100,7 +108,7 @@ if [ -n "$2" ]
 fi
 echo "Give the name of the (old) config file (that we need to get) usually from"
 echo "the last compile, from www.croatiafidelis.hr/gnu/deb/, no extension,"
-echo "such as: config-3.15.5-grsec140723-17 (if no more talk on my Devuan/Debian"
+echo "such as: config-4.9.50-unofficial+grsec (if no more talk on my Devuan/Debian"
 echo "Grsec tips page on this, then just try and choose the latest available)"
 if [ -n "$3" ]
         then
@@ -117,44 +125,39 @@ echo ""
 echo "The command line you would type do this first stretch faster would be"
 echo "similar to this one:"
 echo ""
-echo "./grsec-dev1-compile.sh grsecurity-3.0-3.15.10-201408140023 linux-3.15.10 \\"
-echo "    config-3.15.5-grsec140723-17"
+echo "grsec-dev1-compile.sh v4.9.50-unofficial_grsec-20170914110214 linux-4.9.50 \\"
+echo "    config-4.9.50-unofficial+grsec"
 echo ""
-echo "./grsec-dev1-compile.sh $grsec $kernel $config"
+echo "grsec-dev1-compile.sh $grsec $kernel $config"
 echo ""
-echo ; echo "We download next the kernel, the patch, the config to use."
+echo ; echo "We download next the patch, the kernel, the config to use."
 echo "In case you already did, you'll see info and/or innocuous errors."
 echo "I only want the script to work, can't polish it. Sorry!"
                 read FAKE ;
-echo "the following is untested, but probable:"
+grsec_dir=$(echo $grsec|sed 's/v\(.*\)-unofficial_grsec.*/v\1-unofficial_grsec/');
+wget -nc https://github.com/minipli/linux-unofficial_grsec/releases/download/$grsec_dir/$grsec.diff
+wget -nc https://github.com/minipli/linux-unofficial_grsec/releases/download/$grsec_dir/$grsec.diff.sig
 wget -nc https://www.kernel.org/pub/linux/kernel/v4.x/$kernel.tar.sign
 wget -nc https://www.kernel.org/pub/linux/kernel/v4.x/$kernel.tar.xz
-echo "grsec has recently discontinued publiching patches"
-echo "likely candidate being minipli github unofficial grsecurity patched sources"
-echo "LINK missing"
-#wget -nc https://www.grsecurity.net/test/$grsec.patch.sign
-#wget -nc https://www.grsecurity.net/test/$grsec.patch
-#wget -nc http://www.croatiafidelis.hr/gnu/deb/$config.sign
-#wget -nc http://www.croatiafidelis.hr/gnu/deb/$config.gz
+wget -nc https://www.croatiafidelis.hr/gnu/deb/$config.sig
+wget -nc https://www.croatiafidelis.hr/gnu/deb/$config.gz
 
 echo ; echo "Import the necessary keys:"
-echo "spender does not sign the unofficial grsec, but Matheus Kreuse."
+echo "Matheus Kreuse signs the unofficial_grsec."
 echo "The integrity is check by checking the git archive where he signs tags."
-echo "The patch you get from github is not signed when you get it."
-echo "So I sign the patch only for easy integrity check, not as author."
-# spender key not needed for unofficial:
-#echo  "gpg --recv-key 0x2525FE49"
+echo  "gpg --recv-key 0x7585399992435BA4"
 #                read FAKE ;
-#gpg --recv-key 0x2525FE49
+gpg --recv-key 0x7585399992435BA4
 
-echo  "gpg --recv-key 0x6092693E"
+echo  "gpg --recv-key 0x38DBBDC86092693E"
                 read FAKE ;
-gpg --recv-key 0x6092693E
+echo "Greg Kroah-Hartman signs Linux stable kernels:"
+gpg --recv-key 0x38DBBDC86092693E
 
 echo ; echo "Import my key:"
-echo  "gpg --recv-key 0x4FBAF0AE"
+echo  "gpg --recv-key 0xEA9884884FBAF0AE"
                 read FAKE ;
-gpg --recv-key 0x4FBAF0AE
+gpg --recv-key 0xEA9884884FBAF0AE
 
 echo "You can go offline now, internet not needed while compiling."
 echo "I, myself, unplug the connection physically."
@@ -162,7 +165,7 @@ echo "I, myself, unplug the connection physically."
 echo ; echo "Next, copy all downloads to /home/$user/src/"
                 read FAKE ;
 cp -iav $kernel.tar.* /home/$user/src/
-cp -iav $grsec.patch* /home/$user/src/
+cp -iav $grsec.diff* /home/$user/src/
 cp -iav $config* /home/$user/src/
 cd /home/$user/src/ ; pwd
 ls -l $kernel*
@@ -173,24 +176,24 @@ echo ; echo unxz $kernel.tar.xz ;
 echo ; echo gpg --verify $kernel.tar.sign $kernel.tar ;
                 read FAKE ; 
         gpg --verify $kernel.tar.sign $kernel.tar ;
-echo ; echo gpg --verify $grsec.patch.sign;
+echo ; echo gpg --verify $grsec.diff.sig;
                 read FAKE ; 
-        gpg --verify $grsec.patch.sign $grsec.patch ;
+        gpg --verify $grsec.diff.sig $grsec.diff ;
 echo ; echo gunzip $config.gz;
                 read FAKE ; 
         gunzip $config.gz;
-echo ; echo gpg --verify $config.sign $config ;
+echo ; echo gpg --verify $config.sig $config ;
                 read FAKE ; 
-        gpg --verify $config.sign $config ;
+        gpg --verify $config.sig $config ;
 echo ; echo tar xvf $kernel.tar ;
                 read FAKE ; 
         tar xvf $kernel.tar ;
 echo ; echo cd $kernel;
                 read FAKE ; 
         cd $kernel; pwd
-echo ; echo "patch -p1 < ../$grsec.patch";
+echo ; echo "patch -p1 < ../$grsec.diff";
                 read FAKE ; 
-        patch -p1 < ../$grsec.patch
+        patch -p1 < ../$grsec.diff
 echo ; echo "At this point, if you need to, you can possibly apply"
 echo "other patches to this kernel, as well.";
 echo ; echo cd ../;
@@ -223,6 +226,9 @@ echo "./grsec-dev1-compile.sh: line 125: make: command not found"
 echo "then you need to install the development tools. Don't worry,"
 echo "nothing much. Pls. find instructions in some of my previous/later posts"
 echo "in the Tip on Devuan/Debian Forums, or read the script itself at this point."
+echo "(... no time to fix this with better explanations, sorry... )"
+# By the way, lots of years old text below... No time...
+#
 # Huh? You found it? Probably these commands would get you all you're missing
 # at this point:
 # # apt-get install build-essential fakeroot ; # still correct
