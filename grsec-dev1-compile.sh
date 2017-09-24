@@ -1,14 +1,13 @@
 #!/bin/bash
 #
-# This is grsec-dev1-compile.sh (this first tentative hastily put together from
-# unmaintained grsec-deb-compile.sh; only just so it works --for me it did--),
-# script-guide for beginners who want to compile
+# grsec-dev1-compile.sh -- script-guide for beginners who want to compile
 #
-#             (unofficial) grsecurity enhanced kernel in Devuan
+#                             unofficial-grsecurity enhanced kernel in Devuan
 #
-# copyright Miroslav Rovis, www.CroatiaFidelis.hr
-# (the above needs to be cited if the script is modified/further developed,
-# even if my NGO Croatia Fidelis were to be shut down by my country's regime)
+#                 This script should work for the rest of the Debian family as
+#                 well.
+#
+# copyright 2017 Miroslav Rovis, https://www.CroatiaFidelis.hr
 # 
 # licenced under GNU GPL v3.0 or later, at your choice
 #
@@ -18,15 +17,16 @@
 # such as Devuan/Debian Kernel Handbook, as well as Grsecurity documentation, and
 # other documentation and manuals, wikis and forums.
 # 'chmod 755 grsec-dev1-compile.sh' once you downloaded this script, place
-# it, best, in your homedir, and follow instructions as you run it. If you
-# encounter problems, modify for your needs. Also, pls. report errors on Devuan/Debian
-# Forums where I made the Tips page:
+# it, best, in your /usr/local/bin/, and follow instructions as you run it. If
+# you encounter problems, modify for your needs. Also, pls. report errors on
+# Devuan/Debian Forums where I made the Tips page:
 # "Grsecurity/Pax installation on Devuan/Debian GNU/Linux" (on Debian Forums,
-# and similar title I'll give it on dev1galaxy.org Devuan Forums)
-# but pls. if you will be waiting for my replies, it could take days and longer
-# sometimes. Thank you!
+# and same/similar title I'll gave it on dev1galaxy.org Devuan Forums, pls. see
+# README.md) but pls. if you will be waiting for my replies, it could take days
+# and longer sometimes. Thank you!
 #
 # Save this file to /usr/local/bin and do "chmod 755 grsec-dev1-compile.sh" on it.
+#
 echo
 echo "  Caveat emptor! " 
 echo
@@ -60,10 +60,12 @@ echo "and 'src' for the compilation. Will not create them if they exist,"
 echo "but pls. you make sure that nothing in them obstructs this script,"
 echo "meaning, we'll run command:" 
 echo "'mkdir -pv /home/$user/dLo/ /home/$user/src/'"
-echo "A note is due here. If you don't have at least around 15GB free in your"
+echo ""
+echo "WARNING: If you don't have at least around 15GB free in your"
 echo "homedir, you need to modify the script or arrange in some other way such"
 echo "as to make the /home/$user/src a symlink to somewhere with enough room"
 echo "for the compilation"
+echo ""
                 read FAKE ;
 mkdir -pv /home/$user/dLo/ /home/$user/src/
 echo ; echo ls -l /home/$user/dLo/ /home/$user/src/ ;
@@ -79,15 +81,16 @@ echo "script three arguments, the first, second, and third corresponding to"
 echo "the explanations below. See the echo'd line after the explanations"
 echo "below."
 echo ""
-echo "Give the name of the grsecurity patch (that we need to get) without"
-echo "extension, such as v4.9.50-unofficial_grsec-20170914110214.diff as is found"
-echo "by following https://twitter.com/_minipli for news where the news take you to"
-echo "https://github.com/minipli/linux-unofficial_grsec/releases/ where e.g."
-echo "https://github.com/minipli/linux-unofficial_grsec/releases/tag/v4.9.50-unofficial_grsec)"
-echo "and then the download page such as:"
+echo "Give the name of the unofficial-grsecurity patch (that we need to get),"
+echo "without extension, such as v4.9.50-unofficial_grsec-20170914110214.diff"
+echo "as is found by subscribing to user minipli on github or checking"
+echo "https://github.com/minipli/linux-unofficial_grsec/releases/ where you"
+echo "would then find e.g.:"
+echo "https://github.com/minipli/linux-unofficial_grsec/releases/tag/v4.9.50-unofficial_grsec"
+echo "and then from there would go to the download page such as:"
 echo "https://github.com/minipli/linux-unofficial_grsec/releases/download/v4.9.50-unofficial_grsec/v4.9.50-unofficial_grsec-20170914110214.diff"
-echo "and we need just the \"v4.9.50-unofficial_grsec-20170914110214\" for first argument"
-echo "(or for pasting in at this place)"
+echo "We need just the \"v4.9.50-unofficial_grsec-20170914110214\" as the first argument"
+echo "(or for pasting in just below) :"
 if [ -n "$1" ]
         then
                 grsec="$1"
@@ -96,10 +99,11 @@ if [ -n "$1" ]
 fi
 echo "Give the name of the kernel (that we need to get) such as linux-4.9.50"
 echo "as is found for download (it must correspond to grsecurity patch's"
-echo "name: it is the part of the name before  and before \"-unofficial_grsec...\""
+echo "name: it is the part of the name before \"-unofficial_grsec...\""
 echo "just without the \"v\"."
-echo "but without the timestamp in the name, with linux- added in front, in the example name"
-echo "above it is \"linux-4.9.50\", but compare with www.kernel.org) :"
+echo "and without any timestamp in the name, but with linux- added in front,"
+echo "in the example name above it is \"linux-4.9.50\". You can confirm the"
+echo "name by looking up the relevant section on the www.kernel.org) :"
 if [ -n "$2" ]
         then
                 kernel="$2"
@@ -108,8 +112,9 @@ if [ -n "$2" ]
 fi
 echo "Give the name of the (old) config file (that we need to get) usually from"
 echo "the last compile, from www.croatiafidelis.hr/gnu/deb/, no extension,"
-echo "such as: config-4.9.50-unofficial+grsec (if no more talk on my Devuan/Debian"
-echo "Grsec tips page on this, then just try and choose the latest available)"
+echo "such as: config-4.9.50-unofficial+grsec (if no other talk on my"
+echo "Devuan/Debian Grsec tips page on this, then just try and choose the"
+echo "latest available)"
 if [ -n "$3" ]
         then
                 config="$3"
@@ -122,7 +127,7 @@ echo "above slow websites' addresses and file availability checking, or, if"
 echo "you checked those previously, by giving the corresponding three arguments"
 echo "on the command line to this script, i.e.:"
 echo ""
-echo "The command line you would type do this first stretch faster would be"
+echo "The command line you would type to do this first stretch faster would be"
 echo "similar to this one:"
 echo ""
 echo "grsec-dev1-compile.sh v4.9.50-unofficial_grsec-20170914110214 linux-4.9.50 \\"
@@ -131,8 +136,8 @@ echo ""
 echo "grsec-dev1-compile.sh $grsec $kernel $config"
 echo ""
 echo ; echo "We download next the patch, the kernel, the config to use."
-echo "In case you already did, you'll see info and/or innocuous errors."
-echo "I only want the script to work, can't polish it. Sorry!"
+echo "NOTE: In case you already did, you'll see some info and/or innocuous"
+echo "errors."
                 read FAKE ;
 grsec_dir=$(echo $grsec|sed 's/v\(.*\)-unofficial_grsec.*/v\1-unofficial_grsec/');
 wget -nc https://github.com/minipli/linux-unofficial_grsec/releases/download/$grsec_dir/$grsec.diff
@@ -144,9 +149,9 @@ wget -nc https://www.croatiafidelis.hr/gnu/deb/$config.gz
 
 echo ; echo "Import the necessary keys:"
 echo "Matheus Kreuse signs the unofficial_grsec."
-echo "The integrity is check by checking the git archive where he signs tags."
+echo "The integrity is verified by checking the git archive where he signs tags."
 echo  "gpg --recv-key 0x7585399992435BA4"
-#                read FAKE ;
+                read FAKE ;
 gpg --recv-key 0x7585399992435BA4
 
 echo  "gpg --recv-key 0x38DBBDC86092693E"
@@ -154,13 +159,13 @@ echo  "gpg --recv-key 0x38DBBDC86092693E"
 echo "Greg Kroah-Hartman signs Linux stable kernels:"
 gpg --recv-key 0x38DBBDC86092693E
 
-echo ; echo "Import my key:"
+echo ; echo "Import my key, to get the config that I offer you:"
 echo  "gpg --recv-key 0xEA9884884FBAF0AE"
                 read FAKE ;
 gpg --recv-key 0xEA9884884FBAF0AE
 
 echo "You can go offline now, internet not needed while compiling."
-echo "I, myself, unplug the connection physically."
+#echo "I, myself, unplug the connection physically."
 
 echo ; echo "Next, copy all downloads to /home/$user/src/"
                 read FAKE ;
@@ -227,23 +232,18 @@ echo "then you need to install the development tools. Don't worry,"
 echo "nothing much. Pls. find instructions in some of my previous/later posts"
 echo "in the Tip on Devuan/Debian Forums, or read the script itself at this point."
 echo "(... no time to fix this with better explanations, sorry... )"
-# By the way, lots of years old text below... No time...
 #
 # Huh? You found it? Probably these commands would get you all you're missing
-# at this point:
-# # apt-get install build-essential fakeroot ; # still correct
-# # apt-get build-dep linux ;
-# #  apt-get install libncurses5-dev ;
-# If you have Devuan Jessie RC2, then you also need:
-# # apt-get install libgmp-dev gcc-4.9-plugin-dev
+# at this point (the first # is comment, the second # signifies you are root):
+# # apt-get install build-essential fakeroot 
+# # apt-get build-dep linux
+# # apt-get install libncurses5-dev 
+# # apt-get install libgmp-dev gcc-6-plugin-dev
 # and some more, pls. see "Howto upgrade Devuan (stable) to the latest Linux
-# kernel" on dev1galaxy.org
-# that's not an error '# #'. Run as root. If run as user I would write '# $'
-# instead, where the first # is necessary to make those lines comments
+# kernel" on dev1galaxy.org or other places.
+# Again, that's not an error '# #'. Run as root. If run as user I would write
+# '# $' instead, where the first # is necessary to make those lines comments
 # in both cases.
-# The lines above I have checked today/yesterday (depends when I post this),
-# works for me.
-# But reports are welcome.
 
         make menuconfig
 echo ; echo "The diff .config below will only show differences if you edited"
@@ -270,10 +270,8 @@ echo ; echo cd ../ ;
 cd ../ ; pwd ;
                 read FAKE ; 
 ls -l *.deb
-                echo ; echo "If you see the packages named linux-XXXXXX-grsec-XXX.deb ,"
-                echo "above and if you already used paxctl on grub binaries as"
-                echo "I took care to explain in detail in my Tips (above or linked"
-                echo "somewhere), you're at your last step."
+                echo ; echo "If above here you see listed the packages named"
+                echo "linux-XXXXXX-grsec-XXX.deb, you're at your last step."
                 echo ; echo "But, that step you need to execute as root, so it"
                 echo "is not part of this script executed entire as user."
                 read FAKE ; 
@@ -284,124 +282,8 @@ echo ; echo $msgbeforeroot1
 echo ; echo "$msgbeforeroot2"
 
 echo "And then, if no errors there, you can reboot."
-echo "Upon rebooting, you too should get something like I did below:"
-echo "Pls. look up the rest of the script, for that and for a message"
-echo "to users of Devuan/Debian GNU/Linux"
-# $ uname -a
-# 3.1x.x-grsec140xxx-xx # (where x's are, sure some of 0-9)
-# $
-
-# Most of the following text I wrote months ago when I ventured into this.  I
-# didn't much edit it later at all. And I'm not anymore rewriting nor changing
-# it now either in any way, other then updating if some circumstances changed.
-#
-# But I despise so much the fact that the best GNU/Linux security is blocked
-# and probably artificial, fabricated, manufactured issues introduced to arise
-# in the Debian system once it is installed and Grsec kernel started and the
-# system connects online, as I might be able to demonstrate that those issues I
-# had since some old installations quite some weeks ago now (just go to
-# forums.grsecurity.net in case you doubt my words). Reasons for my suspicion:
-# no issues in the system until only offline, freshly cloned, as I do them,
-# from other same hardware of my systems, safely offline, and strange issues
-# arising solely after the system has connected to internet... And again, no
-# issues with sysresccd booting and accessing internet from the same box.
-#
-# But, I was saying, I despise so much the fact that the best GNU/Linux
-# security is blocked from official Debian GNU/Linux, that I intend to use my
-# slow connection, a fraction speed of what I pay for, being myself a homeland
-# living dissident whom the traitors in power in my Croatia try to keep under
-# control through censorship like that and worse.. Illegally they do so, but
-# those are a bunch of criminals, most of them, anyways... That exactly is what
-# my friend Marko Francišković said to some of their servants, police officers,
-# and is now paying for such words with being tortured, through being
-# administered to him forcefully very hazardous medicaments like Zyprex (if I
-# got the brand name of that sh*t correctly), and his life is in real danger.
-#
-# EDIT Tue 20 May 20:29:49 CEST 2014: Marko was freed in May 2014 following
-#    pressure from inside country and the EU
-#
-# You can actually see Marko Francišković's brutal arrest by the police longer
-# ago yet in a video that I linked to from the topic on Grsecurity Forums:
-# "grsec: halting the system... kernel crash, the Debian side",
-# just search for 'Marko Francišković'.
-# 
-# But here the link, for convenience:
-# Al Jazeera, Clashes on the Eve of EU Referendum, Francišković et. Al HRVATSKI
-# https://www.youtube.com/watch?v=_dX-ek2mPaU
-# 
-# EDIT START Wed Apr 30 11:23:14 CEST 2014
-# No, you probably won't see any video. But see somewhere on
-# www.CroatiaFidelis.hr my reply to Google who terminated my Youtube account.
-# EDIT END
-#
-# But I was saying that I so much despise the fact that the best GNU/Linux
-# security is blocked from official Debian GNU/Linux, that I intend to use my
-# slow connection, a fraction of what I pay for, to try and upload these
-# Grsecurity patched Debian GNU/Linux packages I compiled, on
-# www.CroatiaFidelis.hr . And that task might take me quite a few hours or more
-# hours time. I hope to do that with the new packages that I just made, as I am
-# giving a final revision to this script for Grsec patched kernel 3.13.6 for
-# Debian, as I successfully uploaded them for 3.12.8 .
-# 
-# That's the measure of my disgust of the Debian GNU/Linux leaders having
-# practically and effectively, and for all intents and puposes, banned
-# Grsecurity from anything official in Debian GNU/Linux, and throwing in, or
-# facilitating such actions but someone else, fake errors to confuse new
-# Grsecurity users, as I might be able to demonstrate, had I had the time.
-# That behavior, such hostile action or arrangements, are, apart from being
-# severe moral degradation in itself, against Debian declared social contract,
-# isn't it?  Debian social contract forbids discrimination, and this is
-# discrimination.
-#
-# Hey leaders of Debian, who behave like a bunch of crooks, you have a piece of
-# commons, you have a property of, for short explanation, all good users in the
-# world, a property which is there for all of us to benefit, and not for you to
-# sell users with, through shady dealings with spy agencies and their
-# associates like Google, your great friend...
-# 
-# Hey leaders of Debian, you have a piece of commons which you are not allowed
-# to do anything against us users with, and you are doing that!
-#
-# But I already said, in the script for the 3.12.8, and was to repeat it now,
-# and yet it is such a small effort to compile Grsecurity/Pax patched GNU/Linux
-# kernel for Debian GNU/Linux, that a user who may only be considered somewhat
-# advanced and never really a developer, can do it.
-#
-# It is, however, not a minor effort to demonstrate how attempts
-# at installing and using Grsecurity are deterred, or facilitated to be
-# deterred, purposefully, so go and study my work so far to decide for yourself
-# whether my bare words with no proofs as yet are to be, or not, taken with,
-# and with how much, serious consideration, and whether my accusations against
-# Debian leaders might be or are probably not at all baseless. Because efforts
-# I will make to prove the above suspicion, but it is really huge effort that
-# is needed, and my machines and my SOHO are under attack...  So I am not at
-# all certain to succeed in doing so. Looking all the more unlikely to have the
-# time to do so, is my later musing, as I revisit what I wrote, for the current
-# version of the script...
-#
-# EDIT Tue 20 May 20:47:15 CEST 2014: pls. remember when I talk of "current"
-#   version" in this old text, it is actually about some old earlier version,
-#   but the ending below applies now just as it did back at earlier time:
-# 
-# Pls. let me know if this works for you, dear Debian GNU/Linux user! Those who
-# know how to compile, and those who hopefully learn how to compile through my
-# Tips pages on Debian Forums, pls. get active. We have to get a branch in the
-# Official Debian GNU/Linux repositories, this way, some other way or in yet
-# other fashion, shape or form, this huge injustice against us the users and
-# against shiny honest developers Spender and Pax Team and other developers
-# from their circle has to be reversed!
-#
-# Miroslav Rovis, Zagreb, Croatia, Vankina 4, +385(0)16602633, +385(0)912660202
-# (but you could only reach me if secret services here allow your call through,
-# censorship in Croatia heavy and getting heavier yet)
-# 
-# miro.rovis@croatiafidelis.hr (but you have to be patient awaiting my replies,
-# really!, and, sure, only if those evildoers let it through)
-# 
-# So the safest places to post a message to me, is on Devuan Forums (wherever
-# you found out about this).
-# But again, be patient awaiting for my replies!
-# 
-# Alternative sites, if www.CroatiaFidelis.hr "disappeared": www.exDeo.com and
-# www.vankina2-10.com
-# 
+echo "Upon rebooting, you too should get something like I got below:"
+echo
+echo "$ uname -a"
+echo "4.9.50-unofficial+grsec-170916-20"
+echo "$"
