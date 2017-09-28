@@ -27,6 +27,14 @@
 #
 # Save this file to /usr/local/bin and do "chmod 755 grsec-dev1-compile.sh" on it.
 #
+function ask() # from Mendel Cooper's Advanced Bash Scripting Guide, a free book
+{
+    echo -n "$@" '[y/n] ' ; read ans
+    case "$ans" in
+        y*|Y*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
 echo
 echo "  Caveat emptor! " 
 echo
@@ -136,35 +144,95 @@ echo ""
 echo "grsec-dev1-compile.sh $grsec $kernel $config"
 echo ""
 echo ; echo "We download next the patch, the kernel, the config to use."
-echo "NOTE: In case you already did, you'll see some info and/or innocuous"
-echo "errors."
+echo "NOTE: In case you already did, you can use those previous downloads"
                 read FAKE ;
 grsec_dir=$(echo $grsec|sed 's/v\(.*\)-unofficial_grsec.*/v\1-unofficial_grsec/');
-wget -nc https://github.com/minipli/linux-unofficial_grsec/releases/download/$grsec_dir/$grsec.diff
-wget -nc https://github.com/minipli/linux-unofficial_grsec/releases/download/$grsec_dir/$grsec.diff.sig
-wget -nc https://www.kernel.org/pub/linux/kernel/v4.x/$kernel.tar.sign
-wget -nc https://www.kernel.org/pub/linux/kernel/v4.x/$kernel.tar.xz
-wget -nc https://www.croatiafidelis.hr/gnu/deb/$config.sig
-wget -nc https://www.croatiafidelis.hr/gnu/deb/$config.gz
+if [ -e "$grsec.diff" ]; then 
+	echo "$grsec.diff there, but if you want to redownload it for"
+	echo "some reason, type y/Y (will redownload the sig too), anything else"
+	echo "moves you on"
+	ask;
+	if [ "$?" == 0 ]; then
+		wget -nc \
+			https://github.com/minipli/linux-unofficial_grsec/releases/download/$grsec_dir/$grsec.diff
+		wget -nc \
+			https://github.com/minipli/linux-unofficial_grsec/releases/download/$grsec_dir/$grsec.diff.sig
+	else
+		echo # do nothing
+	fi
+else
+	wget -nc \
+		https://github.com/minipli/linux-unofficial_grsec/releases/download/$grsec_dir/$grsec.diff
+	wget -nc \
+		https://github.com/minipli/linux-unofficial_grsec/releases/download/$grsec_dir/$grsec.diff.sig
+fi
+if [ -e "$kernel.tar.xz" ]; then 
+	echo "$kernel.tar.xz there, but if you want to redownload it for"
+	echo "some reason, type y/Y (will redownload the sig too), anything else"
+	echo "moves you on"
+	ask;
+	if [ "$?" == 0 ]; then
+		wget -nc https://www.kernel.org/pub/linux/kernel/v4.x/$kernel.tar.xz
+		wget -nc https://www.kernel.org/pub/linux/kernel/v4.x/$kernel.tar.sign
+	else
+		echo # do nothing
+	fi
+else
+	wget -nc https://www.kernel.org/pub/linux/kernel/v4.x/$kernel.tar.xz
+	wget -nc https://www.kernel.org/pub/linux/kernel/v4.x/$kernel.tar.sign
+fi
+if [ -e "$config.gz" ]; then 
+	echo "$config.gz there, but if you want to redownload it for"
+	echo "some reason, type y/Y (will redownload the sig too), anything else"
+	echo "moves you on"
+	ask;
+	if [ "$?" == 0 ]; then
+		wget -nc https://www.croatiafidelis.hr/gnu/deb/$config.sig
+		wget -nc https://www.croatiafidelis.hr/gnu/deb/$config.gz
+	else
+		echo # do nothing
+	fi
+else
+	wget -nc https://www.croatiafidelis.hr/gnu/deb/$config.sig
+	wget -nc https://www.croatiafidelis.hr/gnu/deb/$config.gz
+fi
 
 echo ; echo "Import the necessary keys:"
 echo "Matheus Kreuse signs the unofficial_grsec."
 echo "The integrity is verified by checking the git archive where he signs tags."
-echo  "gpg --recv-key 0x7585399992435BA4"
+# But we only need to get the key if we don't already have it, right?
+gpg --quiet --list-key 0x7585399992435BA4
+if (gpg --quiet --list-key 0x7585399992435BA4 | grep 76298B5BB60EDAD21B362E667585399992435BA4); then
+	echo "Matheus Krause's key (x7585399992435BA4) in your keyring, no need"
+	echo "to receive it"
+else
+	echo  "gpg --recv-key 0x7585399992435BA4"
                 read FAKE ;
-gpg --recv-key 0x7585399992435BA4
+	gpg --recv-key 0x7585399992435BA4
+fi
 
-echo  "gpg --recv-key 0x38DBBDC86092693E"
-                read FAKE ;
 echo "Greg Kroah-Hartman signs Linux stable kernels:"
-gpg --recv-key 0x38DBBDC86092693E
-
-echo ; echo "Import my key, to get the config that I offer you:"
-echo  "gpg --recv-key 0xEA9884884FBAF0AE"
+if (gpg --quiet --list-key 0x38DBBDC86092693E | grep 647F28654894E3BD457199BE38DBBDC86092693E); then
+	echo "Greg Kroah-Hartman's key (x38DBBDC86092693E) in your keyring, no need"
+	echo "to receive it"
+else
+	echo  "gpg --recv-key 0x38DBBDC86092693E"
                 read FAKE ;
-gpg --recv-key 0xEA9884884FBAF0AE
+	gpg --recv-key 0x38DBBDC86092693E
+fi
 
-echo "You can go offline now, internet not needed while compiling."
+echo "Import my key, to get the config that I offer you:"
+if (gpg --quiet --list-key 0xEA9884884FBAF0AE | grep FCF13245ED247DCE443855B7EA9884884FBAF0AE); then
+	echo "Miroslav Rovis' key (xEA9884884FBAF0AE) in your keyring, no need"
+	echo "to receive it"
+else
+	echo  "gpg --recv-key 0xEA9884884FBAF0AE"
+                read FAKE ;
+	gpg --recv-key 0xEA9884884FBAF0AE
+fi
+
+echo "You can go offline now (if you're not already), internet not needed"
+echo "while compiling."
 #echo "I, myself, unplug the connection physically."
 
 echo ; echo "Next, copy all downloads to /home/$user/src/"
